@@ -19,20 +19,28 @@ class mapDirectionService {
             zoom: 14,
             center: { lat: 37.77, lng: -122.447 }
         });
+        // First marker without destination
+        let directionMarker;
 
         const points = {};
         google.maps.event.addListener(map, 'click', event => {
             const newMarker = event.latLng;
+            console.log(newMarker.toJSON())
             // First click set the origin point
             // Second click set the destination point
-            if ( !points.origin || !points.destination){
                 if (!points.origin) {
                     points.origin = newMarker.toJSON();
-                } else if (!points.destination) {
+                    directionMarker = new google.maps.Marker({
+                        position: newMarker, 
+                        map: map
+                    });
+                } else{
+                    // Hide the first marker
+                    directionMarker.setMap(null);
                     points.destination = newMarker.toJSON();
+                    this.calculateAndDisplayRoute(directionsService, directionsDisplay, points);
                 }
-                this.calculateAndDisplayRoute(directionsService, directionsDisplay, points);
-            }
+                
         });
         directionsDisplay.setMap(map);
     }
